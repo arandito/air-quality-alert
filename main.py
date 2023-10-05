@@ -5,17 +5,10 @@ import requests
 import gspread
 
 # tweepy v2
-"""
 client = tweepy.Client(consumer_key=config.API_KEY,
                        consumer_secret=config.API_KEY_SECRET,
                        access_token=config.ACCESS_TOKEN,
                        access_token_secret=config.ACCESS_TOKEN_SECRET)
-"""
-
-auth = tweepy.OAuth1UserHandler(config.API_KEY, config.API_KEY_SECRET)
-auth.set_access_token(config.ACCESS_TOKEN, config.ACCESS_TOKEN_SECRET)
-
-api = tweepy.API(auth)
 
 gc = gspread.service_account('credentials.json')
 wks = gc.open("air-quality-alert").sheet1
@@ -91,8 +84,7 @@ def tweet_alert(index, aqi, category, zip_key):
         wks.update("B" + str(index), category)
         tweet_str = f'Air quality in {zip_key} is now "{category}" with an ' \
                     f'AQI of {aqi}. Air quality was previously "{val}".'
-        file = image_hash[category]
-        res = api.update_status(status=tweet_str, filename=file)
+        res = client.create_tweet(text=tweet_str)
         print(res)
     return
 
