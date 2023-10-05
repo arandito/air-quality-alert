@@ -5,20 +5,14 @@ import requests
 import gspread
 
 # tweepy v2
-"""
 client = tweepy.Client(consumer_key=config.API_KEY,
                        consumer_secret=config.API_KEY_SECRET,
                        access_token=config.ACCESS_TOKEN,
                        access_token_secret=config.ACCESS_TOKEN_SECRET)
-"""
-
-auth = tweepy.OAuth1UserHandler(config.API_KEY, config.API_KEY_SECRET)
-auth.set_access_token(config.ACCESS_TOKEN, config.ACCESS_TOKEN_SECRET)
-
-api = tweepy.API(auth)
 
 gc = gspread.service_account('credentials.json')
 wks = gc.open("air-quality-alert").sheet1
+aqi_api_key = config.AQI_API_KEY
 
 zipcode_hash = {
     "New York, NY": "10027",
@@ -82,20 +76,15 @@ image_hash = {
     "Hazardous": "hazardous.png"
 }
 
-aqi_api_key = config.AQI_API_KEY
-
-
 def tweet_alert(index, aqi, category, zip_key):
     val = wks.acell('B' + str(index)).value
     if val != category:
         wks.update("B" + str(index), category)
         tweet_str = f'Air quality in {zip_key} is now "{category}" with an ' \
                     f'AQI of {aqi}. Air quality was previously "{val}".'
-        file = image_hash[category]
-        res = api.update_status(status=tweet_str, filename=file)
+        res = client.create_tweet(text=tweet_str)
         print(res)
     return
-
 
 i = 1
 for key in zipcode_hash:
@@ -111,9 +100,9 @@ for key in zipcode_hash:
         aqi_value = data_dict['AQI']
         category_dict = data_dict['Category']
         aqi_category = category_dict["Name"]
-
         tweet_alert(i, aqi_value, aqi_category, key)
         wks.update("A" + str(i), data_dict['AQI'])
+
         # print(str(dataHash['AQI']) + " - " + dataHash['ParameterName'])
     elif len(data) == 1:
         data_dict = data[0]
@@ -121,8 +110,8 @@ for key in zipcode_hash:
         category_dict = data_dict['Category']
         aqi_category = category_dict["Name"]
         tweet_alert(i, aqi_value, aqi_category, key)
-
         wks.update("A" + str(i), data_dict['AQI'])
+
         # print(str(dataHash['AQI']) + " - " + dataHash['ParameterName'])
     else:
         print('')
