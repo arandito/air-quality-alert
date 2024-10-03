@@ -122,7 +122,7 @@ AMERICAN_CITIES_LAT_LONG = {
     "Oakland, CA": (37.8044, -122.2711),
     "Minneapolis, MN": (44.9778, -93.2650),
     "Bakersfield, CA": (35.3733, -119.0187),
-    "Tulsa, OK": (36.1539, -95.9928),
+    "Tulsa, OK": (36.1575, -95.9928),
     "Tampa, FL": (27.9517, -82.4588),
     "Wichita, KS": (37.6872, -97.3301),
     "New Orleans, LA": (29.9509, -90.0758),
