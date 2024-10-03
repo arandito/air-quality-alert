@@ -1,4 +1,5 @@
 import os
+import random
 import redis
 import requests
 import tweepy
@@ -55,7 +56,9 @@ def parse_aqi_data(aqi_data):
 
 def aqi_alert():
     tweets = 0
-    for city, zipcode in AMERICAN_CITIES.items():
+    shuffled_cities = list(AMERICAN_CITIES.items())
+    random.shuffle(shuffled_cities)
+    for city, zipcode in shuffled_cities:
         aqi_api_url = (
             f"{os.environ['AIRNOW_API_URL']}?format=application/json&"
             f"zipCode={zipcode}&distance=10&API_KEY={os.environ['AIRNOW_API_KEY']}"
@@ -76,11 +79,9 @@ def aqi_alert():
         lat, lon = AMERICAN_CITIES_LAT_LONG[city]
         if prev_category != curr_category:
             db.set(city, curr_category)
-            # Alert only when new conditions are not Good
-            if curr_category != "Good":
-                generate_map_with_overlay(lat, lon, parsed_aqi_data["AQI"], os.path.join(SRC_DIR, "assets"))
-                tweet_alert(city, prev_category, curr_category, parsed_aqi_data["AQI"], parsed_aqi_data["MainPollutant"])
-                tweets += 1
+            generate_map_with_overlay(lat, lon, parsed_aqi_data["AQI"], os.path.join(SRC_DIR, "assets"))
+            tweet_alert(city, prev_category, curr_category, parsed_aqi_data["AQI"], parsed_aqi_data["MainPollutant"])
+            tweets += 1
 
         # Max tweet count per day is 50 and we are running this code twice a day.
         if tweets == 25:
