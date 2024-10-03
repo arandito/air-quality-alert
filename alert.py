@@ -77,7 +77,7 @@ def aqi_alert():
         curr_category = parsed_aqi_data["Category"]
         print(f"{city.upper()} -> prev: {prev_category}, curr: {curr_category}")
         lat, lon = AMERICAN_CITIES_LAT_LONG[city]
-        if prev_category != curr_category:
+        if parsed_aqi_data["AQI"] >= 0 and prev_category != curr_category:
             db.set(city, curr_category)
             generate_map_with_overlay(lat, lon, parsed_aqi_data["AQI"], os.path.join(SRC_DIR, "assets"))
             tweet_alert(city, prev_category, curr_category, parsed_aqi_data["AQI"], parsed_aqi_data["MainPollutant"])
