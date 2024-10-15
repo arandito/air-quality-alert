@@ -38,7 +38,7 @@ The following environment variables need to be set:
 - `app.py`: Main Flask application
 - `alert.py`: Core logic for fetching AQI data and posting tweets
 - `map.py`: Functions for generating maps with AQI overlays
-- `constants.py`: Contains data for American cities (not provided in the snippet)
+- `constants.py`: Contains data for American cities
 - `Dockerfile`: Instructions for building the Docker image
 - `requirements.txt`: List of Python dependencies
 
